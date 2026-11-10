@@ -1,0 +1,27 @@
+name: Offline reproduction
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify release fingerprints
+        run: python tools/verify_release.py
+      - name: Run public test suite
+        run: python -B -m unittest discover -s tests -v
+      - name: Validate synthetic registry
+        run: python -B -m geoagent_reliability_lab validate
+      - name: Run synthetic MCP chain
+        run: python -B examples/geoapify_mcp_two_step.py
+      - name: Run M6 regression
+        run: python -B tools/run_regression.py

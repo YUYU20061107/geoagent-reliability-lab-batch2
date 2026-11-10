@@ -1,0 +1,45 @@
+{
+  "schema": "geoagent.public-two-step/1",
+  "at": "2026-11-10T02:36:05.505217+00:00",
+  "source": "SYNTHETIC",
+  "network_tools_calls": 0,
+  "simulated_tools_calls": 2,
+  "credits_reserved": 0,
+  "credits_observed": null,
+  "tools": [
+    "geocode_address",
+    "reverse_geocode_coordinates"
+  ],
+  "lineage": {
+    "source_tool": "geocode_address",
+    "target_tool": "reverse_geocode_coordinates",
+    "source_response_sha256": "901185378d2291d376165c0e4ef69547b8a7a246759f97bcbaf7f05adc6c13d2",
+    "lat_value_sha256": "83f8b6167619ae681b49f796c599963e856ccbc03bcf4f78356af27ecbeea389",
+    "lon_value_sha256": "6b4d1fde3602a382dae2f8ceb95c044603fd96f6b6c0abaf56b476d7eb8b3d02",
+    "resolved_arguments": {
+      "lat": 52.5172707,
+      "lon": 13.3978233
+    },
+    "arguments_equal_first_response": true,
+    "reference_strings_sent": false
+  },
+  "request_response_hashes": [
+    {
+      "method": "tools/call",
+      "tool": "geocode_address",
+      "request_sha256": "da688c9646dff7a4a724763d01eeb4564cb2eb4a335a4473aec2744cc647e595",
+      "response_sha256": "901185378d2291d376165c0e4ef69547b8a7a246759f97bcbaf7f05adc6c13d2",
+      "capture_layer": "SYNTHETIC"
+    },
+    {
+      "method": "tools/call",
+      "tool": "reverse_geocode_coordinates",
+      "request_sha256": "424ae81a499493f1ccd7fc839973004231bf87287454ca346f54b6320a44c2c5",
+      "response_sha256": "6feba554a8388e59283a95efd332bc24ebbd25b12c4e82e46192f805a7a7c771",
+      "capture_layer": "SYNTHETIC"
+    }
+  ],
+  "reverse_result_count": 1,
+  "dispatch_lineage": "PASS",
+  "independent_geographic_oracle": "UNKNOWN"
+}

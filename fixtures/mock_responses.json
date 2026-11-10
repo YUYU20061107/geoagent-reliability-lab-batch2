@@ -1,0 +1,477 @@
+{
+  "schema_version": "1.0.0",
+  "meta": {
+    "mode": "synthetic_mock",
+    "real_api": false,
+    "network": false,
+    "source_label": "synthetic/illustrative",
+    "generated_for": "GeoAgent Reliability Lab Sprint 0",
+    "notice": "Every value below is invented for deterministic software tests. None is a captured Geoapify response or a verified real-world fact."
+  },
+  "responses": {
+    "G-001": {
+      "geocode": {
+        "capability": "geocode.forward",
+        "result": {
+          "synthetic": true,
+          "query": "Harbor Light, Synthetic Bay",
+          "result_count": 1,
+          "results": [
+            {
+              "place_id": "syn_poi_harbor_light",
+              "name": "Harbor Light",
+              "formatted_address": "1 Harbor Way, Synthetic Bay",
+              "location": {"lat": 0.01, "lon": 0.02},
+              "confidence": 0.99,
+              "source_label": "synthetic/illustrative"
+            }
+          ]
+        }
+      }
+    },
+    "G-002": {
+      "reverse": {
+        "capability": "geocode.reverse",
+        "result": {
+          "synthetic": true,
+          "query": {"lat": 0.01, "lon": 0.02},
+          "result_count": 1,
+          "results": [
+            {
+              "place_id": "syn_addr_harbor_1",
+              "formatted_address": "1 Harbor Way, Synthetic Bay",
+              "location": {"lat": 0.01, "lon": 0.02},
+              "distance_m": 0.0,
+              "source_label": "synthetic/illustrative"
+            }
+          ]
+        }
+      }
+    },
+    "G-003": {
+      "geocode": {
+        "capability": "geocode.forward",
+        "result": {
+          "synthetic": true,
+          "query": "Cedar Library, Synthetic Bay",
+          "result_count": 1,
+          "results": [
+            {
+              "place_id": "syn_poi_cedar_library",
+              "name": "Cedar Library",
+              "formatted_address": "10 Cedar Lane, Synthetic Bay",
+              "location": {"lat": 0.005, "lon": 0.015},
+              "local_xy": {"x_m": 10, "y_m": 20},
+              "confidence": 0.99,
+              "source_label": "synthetic/illustrative"
+            }
+          ]
+        }
+      },
+      "reverse": {
+        "capability": "geocode.reverse",
+        "result": {
+          "synthetic": true,
+          "query": {"lat": 0.005, "lon": 0.015},
+          "result_count": 1,
+          "results": [
+            {
+              "place_id": "syn_addr_cedar_10",
+              "formatted_address": "10 Cedar Lane, Synthetic Bay",
+              "location": {"lat": 0.005, "lon": 0.015},
+              "distance_m": 0.0,
+              "source_label": "synthetic/illustrative"
+            }
+          ]
+        }
+      }
+    },
+    "P-001": {
+      "search": {
+        "capability": "places.search",
+        "result": {
+          "synthetic": true,
+          "result_count": 2,
+          "results": [
+            {
+              "place_id": "syn_poi_cafe_a",
+              "name": "Bean Street Cafe",
+              "category": "cafe",
+              "location": {"lat": 0.008, "lon": 0.018},
+              "distance_m": 180.0,
+              "open_now": true,
+              "source_label": "synthetic/illustrative"
+            },
+            {
+              "place_id": "syn_poi_cafe_b",
+              "name": "Harbor Roast",
+              "category": "cafe",
+              "location": {"lat": 0.009, "lon": 0.022},
+              "distance_m": 420.0,
+              "open_now": true,
+              "source_label": "synthetic/illustrative"
+            }
+          ]
+        }
+      }
+    },
+    "P-002": {
+      "search": {
+        "capability": "places.search",
+        "result": {
+          "synthetic": true,
+          "result_count": 1,
+          "results": [
+            {
+              "place_id": "syn_pharmacy_open",
+              "name": "Clinic Corner Pharmacy",
+              "category": "pharmacy",
+              "location": {"lat": 0.0125, "lon": 0.0255},
+              "distance_m": 60.0,
+              "open_now": true,
+              "source_label": "synthetic/illustrative"
+            }
+          ]
+        }
+      }
+    },
+    "P-003": {
+      "search": {
+        "capability": "places.search",
+        "result": {
+          "synthetic": true,
+          "result_count": 1,
+          "results": [
+            {
+              "place_id": "syn_poi_cafe_a",
+              "name": "Bean Street Cafe",
+              "category": "cafe",
+              "location": {"lat": 0.008, "lon": 0.018},
+              "distance_m": 180.0,
+              "open_now": true,
+              "source_label": "synthetic/illustrative"
+            }
+          ]
+        }
+      },
+      "route": {
+        "capability": "route.plan",
+        "result": {
+          "synthetic": true,
+          "route_id": "syn_route_p003",
+          "profile": "foot-walking",
+          "origin": {"place_id": "syn_poi_cedar_library", "lat": 0.005, "lon": 0.015},
+          "destination": {"place_id": "syn_poi_cafe_a", "lat": 0.008, "lon": 0.018},
+          "distance_m": 240.0,
+          "duration_s": 180.0,
+          "legs": [
+            {
+              "index": 0,
+              "distance_m": 240.0,
+              "duration_s": 180.0,
+              "destination": {"place_id": "syn_poi_cafe_a"}
+            }
+          ],
+          "source_label": "synthetic/illustrative"
+        }
+      }
+    },
+    "R-001": {
+      "route": {
+        "capability": "route.plan",
+        "result": {
+          "synthetic": true,
+          "route_id": "syn_route_r001",
+          "profile": "foot-walking",
+          "distance_m": 860.5,
+          "duration_s": 645.0,
+          "legs": [
+            {
+              "index": 0,
+              "distance_m": 860.5,
+              "duration_s": 645.0,
+              "destination": {"place_id": "syn_poi_harbor_light"},
+              "instruction": "Walk along the synthetic harbor path."
+            }
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.005, 0.015],
+              [0.007, 0.017],
+              [0.01, 0.02]
+            ]
+          },
+          "source_label": "synthetic/illustrative"
+        }
+      }
+    },
+    "R-002": {
+      "matrix": {
+        "capability": "route.matrix",
+        "result": {
+          "synthetic": true,
+          "profile": "driving-car",
+          "origins": [
+            {"id": "origin_a", "index": 0},
+            {"id": "origin_b", "index": 1},
+            {"id": "origin_c", "index": 2}
+          ],
+          "destinations": [
+            {"id": "dest_x", "index": 0},
+            {"id": "dest_y", "index": 1}
+          ],
+          "distances_m": [
+            [100.0, 200.0],
+            [300.0, 400.0],
+            [500.0, 600.0]
+          ],
+          "durations_s": [
+            [60.0, 120.0],
+            [180.0, 240.0],
+            [300.0, 360.0]
+          ],
+          "source_label": "synthetic/illustrative"
+        }
+      }
+    },
+    "R-003": {
+      "route": {
+        "capability": "route.plan",
+        "result": {
+          "synthetic": true,
+          "route_id": "syn_route_r003",
+          "profile": "foot-walking",
+          "distance_m": 1450.0,
+          "duration_s": 1080.0,
+          "legs": [
+            {
+              "index": 0,
+              "distance_m": 720.0,
+              "duration_s": 540.0,
+              "destination": {"place_id": "syn_poi_market"}
+            },
+            {
+              "index": 1,
+              "distance_m": 730.0,
+              "duration_s": 540.0,
+              "destination": {"place_id": "syn_poi_park_gate"}
+            }
+          ],
+          "source_label": "synthetic/illustrative"
+        }
+      }
+    },
+    "R-004": {
+      "matrix": {
+        "capability": "route.matrix",
+        "result": {
+          "synthetic": true,
+          "profile": "driving-car",
+          "origins": [
+            {"id": "station", "index": 0},
+            {"id": "library", "index": 1}
+          ],
+          "destinations": [
+            {"id": "market", "index": 0},
+            {"id": "clinic", "index": 1}
+          ],
+          "distances_m": [
+            [420.0, 900.0],
+            [310.0, 760.0]
+          ],
+          "durations_s": [
+            [300.0, 600.0],
+            [240.0, 500.0]
+          ],
+          "source_label": "synthetic/illustrative"
+        }
+      },
+      "plan": {
+        "capability": "route.plan",
+        "result": {
+          "synthetic": true,
+          "route_id": "syn_route_r004",
+          "profile": "driving-car",
+          "origin": {"place_id": "syn_poi_cedar_library", "lat": 0.005, "lon": 0.015},
+          "destination": {"place_id": "syn_poi_market", "lat": 0.004, "lon": 0.016},
+          "distance_m": 310.0,
+          "duration_s": 240.0,
+          "legs": [
+            {
+              "index": 0,
+              "distance_m": 310.0,
+              "duration_s": 240.0,
+              "destination": {"place_id": "syn_poi_market"}
+            }
+          ],
+          "source_label": "synthetic/illustrative"
+        }
+      },
+      "reverse": {
+        "capability": "geocode.reverse",
+        "result": {
+          "synthetic": true,
+          "query": {"lat": 0.004, "lon": 0.016},
+          "result_count": 1,
+          "results": [
+            {
+              "place_id": "syn_addr_market_5",
+              "formatted_address": "5 Market Square, Synthetic Bay",
+              "location": {"lat": 0.004, "lon": 0.016},
+              "distance_m": 0.0,
+              "source_label": "synthetic/illustrative"
+            }
+          ]
+        }
+      }
+    },
+    "S-001": {
+      "relate": {
+        "capability": "spatial.relate",
+        "result": {
+          "synthetic": true,
+          "relation": "within",
+          "value": true,
+          "subject_id": "syn_point_20_30",
+          "object_id": "syn_zone_cedar_green",
+          "source_label": "synthetic/illustrative"
+        }
+      }
+    },
+    "S-002": {
+      "relate": {
+        "capability": "spatial.relate",
+        "result": {
+          "synthetic": true,
+          "relation": "intersects",
+          "value": true,
+          "subject_id": "syn_path_survey_01",
+          "object_id": "syn_zone_cedar_green",
+          "source_label": "synthetic/illustrative"
+        }
+      }
+    },
+    "S-003": {
+      "relate": {
+        "capability": "spatial.relate",
+        "result": {
+          "synthetic": true,
+          "relation": "within_distance",
+          "value": true,
+          "distance_m": 150.0,
+          "threshold_m": 200.0,
+          "subject_id": "syn_point_320_40",
+          "object_id": "syn_zone_cedar_green",
+          "source_label": "synthetic/illustrative"
+        }
+      }
+    },
+    "S-004": {
+      "geocode": {
+        "capability": "geocode.forward",
+        "result": {
+          "synthetic": true,
+          "query": "Cedar Library, Synthetic Bay",
+          "result_count": 1,
+          "results": [
+            {
+              "place_id": "syn_poi_cedar_library",
+              "name": "Cedar Library",
+              "formatted_address": "10 Cedar Lane, Synthetic Bay",
+              "location": {"lat": 0.005, "lon": 0.015},
+              "local_xy": {"x_m": 10, "y_m": 20},
+              "confidence": 0.99,
+              "source_label": "synthetic/illustrative"
+            }
+          ]
+        }
+      },
+      "relate": {
+        "capability": "spatial.relate",
+        "result": {
+          "synthetic": true,
+          "relation": "within",
+          "value": true,
+          "subject": {"x_m": 10, "y_m": 20},
+          "object_id": "syn_zone_cedar_green",
+          "source_label": "synthetic/illustrative"
+        }
+      }
+    },
+    "M-001": {
+      "measure": {
+        "capability": "geometry.measure",
+        "result": {
+          "synthetic": true,
+          "operation": "distance",
+          "value": 500.0,
+          "unit": "m",
+          "method": "planar_euclidean",
+          "source_label": "synthetic/illustrative"
+        }
+      }
+    },
+    "M-002": {
+      "measure": {
+        "capability": "geometry.measure",
+        "result": {
+          "synthetic": true,
+          "operation": "area",
+          "value": 5000.0,
+          "unit": "m2",
+          "method": "planar_shoelace",
+          "source_label": "synthetic/illustrative"
+        }
+      }
+    },
+    "M-003": {
+      "measure": {
+        "capability": "geometry.measure",
+        "result": {
+          "synthetic": true,
+          "operation": "bearing_midpoint",
+          "value": 45.0,
+          "unit": "degrees",
+          "midpoint": {"x_m": 50.0, "y_m": 50.0},
+          "source_label": "synthetic/illustrative"
+        }
+      }
+    },
+    "M-004": {
+      "segment_1": {
+        "capability": "geometry.measure",
+        "result": {
+          "synthetic": true,
+          "operation": "distance",
+          "value": 500.0,
+          "unit": "m",
+          "method": "planar_euclidean",
+          "source_label": "synthetic/illustrative"
+        }
+      },
+      "segment_2": {
+        "capability": "geometry.measure",
+        "result": {
+          "synthetic": true,
+          "operation": "distance",
+          "value": 500.0,
+          "unit": "m",
+          "method": "planar_euclidean",
+          "source_label": "synthetic/illustrative"
+        }
+      },
+      "total": {
+        "capability": "geometry.measure",
+        "result": {
+          "synthetic": true,
+          "operation": "polyline_length",
+          "value": 1000.0,
+          "unit": "m",
+          "method": "planar_segment_sum",
+          "source_label": "synthetic/illustrative"
+        }
+      }
+    }
+  }
+}

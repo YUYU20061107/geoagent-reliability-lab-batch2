@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+.env.*
+artifacts/
+_private/
+*.local.json
+my_*.json
+repro/_out/
+.pytest_cache/

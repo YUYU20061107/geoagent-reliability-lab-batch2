@@ -1,0 +1,1497 @@
+{
+  "schema_version": "1.0.0",
+  "meta": {
+    "name": "GeoAgent Reliability Lab Task Registry",
+    "registry_version": "0.1.0",
+    "synthetic_only": true,
+    "real_api_verified": false,
+    "expected_category_counts": {
+      "G": 3,
+      "P": 3,
+      "R": 4,
+      "S": 4,
+      "M": 4
+    },
+    "tool_id_policy": "Abstract capability IDs used only by this harness; they are not verified Geoapify tool names, endpoints, or response schemas.",
+    "source_label": "synthetic/illustrative",
+    "notes": [
+      "All places, coordinates, routes, matrices, and geometry values are invented fixtures for software testing.",
+      "No response in this repository was captured from Geoapify or any live map service.",
+      "The route matrix coverage is represented by R-002 and R-004, not by an unverified live API claim."
+    ]
+  },
+  "tasks": [
+    {
+      "id": "G-001",
+      "category": "G",
+      "subcategory": "forward_geocoding",
+      "capability_family": "geocoding",
+      "title": "Forward geocode a named synthetic landmark",
+      "description": "Resolve a named landmark to one synthetic place record and verify the top result's stable place ID and illustrative coordinates.",
+      "user_prompt": "Geocode 'Harbor Light' in Synthetic Bay. Return the top place ID and its illustrative latitude and longitude.",
+      "input_spec": {
+        "type": "object",
+        "required": ["query", "region"],
+        "properties": {
+          "query": {"type": "string"},
+          "region": {"type": "string"}
+        },
+        "sample": {
+          "query": "Harbor Light",
+          "region": "Synthetic Bay"
+        }
+      },
+      "reference_tool_chain": [
+        {
+          "step_id": "geocode",
+          "tool": "geocode.forward",
+          "purpose": "Resolve the landmark name against the synthetic fixture world.",
+          "arguments": {
+            "query": "Harbor Light",
+            "region": "Synthetic Bay"
+          }
+        }
+      ],
+      "expected_tools": ["geocode.forward"],
+      "success_criteria": [
+        {
+          "id": "one_result",
+          "target": "$.steps.geocode.result_count",
+          "operator": "equals",
+          "expected": 1
+        },
+        {
+          "id": "top_place_id",
+          "target": "$.steps.geocode.results[0].place_id",
+          "operator": "equals",
+          "expected": "syn_poi_harbor_light"
+        },
+        {
+          "id": "latitude",
+          "target": "$.steps.geocode.results[0].location.lat",
+          "operator": "numeric_close",
+          "expected": 0.01,
+          "tolerance": 0.0000001
+        },
+        {
+          "id": "longitude",
+          "target": "$.steps.geocode.results[0].location.lon",
+          "operator": "numeric_close",
+          "expected": 0.02,
+          "tolerance": 0.0000001
+        }
+      ],
+      "oracle_type": "fixture_tolerance",
+      "assumptions": [
+        "Synthetic Bay and Harbor Light are fictional fixture labels, not real places.",
+        "The expected record comes from this repository's synthetic fixture, not from a live geocoder.",
+        "Top-1 behavior is assumed for this deterministic fixture case."
+      ],
+      "dynamic_data_handling": {
+        "strategy": "fixture_pinned",
+        "freshness": "not_applicable",
+        "note": "The expected answer is a frozen synthetic fixture; no live data refresh is attempted."
+      },
+      "source": {
+        "kind": "synthetic",
+        "synthetic": true,
+        "fixture_id": "G-001",
+        "note": "Synthetic/illustrative test record authored for this repository; not a Geoapify response."
+      },
+      "tags": ["forward_geocoding", "top1", "offline_fixture"]
+    },
+    {
+      "id": "G-002",
+      "category": "G",
+      "subcategory": "reverse_geocoding",
+      "capability_family": "reverse_geocoding",
+      "title": "Reverse geocode a synthetic coordinate",
+      "description": "Resolve a synthetic coordinate to a synthetic street address and verify the address and stable address ID.",
+      "user_prompt": "Reverse geocode latitude 0.0100, longitude 0.0200 and report the formatted address and place ID.",
+      "input_spec": {
+        "type": "object",
+        "required": ["lat", "lon"],
+        "properties": {
+          "lat": {"type": "number"},
+          "lon": {"type": "number"}
+        },
+        "sample": {
+          "lat": 0.01,
+          "lon": 0.02
+        }
+      },
+      "reference_tool_chain": [
+        {
+          "step_id": "reverse",
+          "tool": "geocode.reverse",
+          "purpose": "Resolve the requested synthetic coordinate to an illustrative address.",
+          "arguments": {
+            "lat": 0.01,
+            "lon": 0.02
+          }
+        }
+      ],
+      "expected_tools": ["geocode.reverse"],
+      "success_criteria": [
+        {
+          "id": "one_address",
+          "target": "$.steps.reverse.result_count",
+          "operator": "equals",
+          "expected": 1
+        },
+        {
+          "id": "address_id",
+          "target": "$.steps.reverse.results[0].place_id",
+          "operator": "equals",
+          "expected": "syn_addr_harbor_1"
+        },
+        {
+          "id": "address_text",
+          "target": "$.steps.reverse.results[0].formatted_address",
+          "operator": "contains",
+          "expected": "Harbor Way"
+        }
+      ],
+      "oracle_type": "fixture_exact",
+      "assumptions": [
+        "The coordinate and address are invented test data, not a real-world location claim.",
+        "The fixture store contains one unambiguous nearest address for this coordinate.",
+        "No live reverse-geocoding fallback is used."
+      ],
+      "dynamic_data_handling": {
+        "strategy": "fixture_pinned",
+        "freshness": "not_applicable",
+        "note": "The synthetic address is frozen; real address changes are outside this test."
+      },
+      "source": {
+        "kind": "synthetic",
+        "synthetic": true,
+        "fixture_id": "G-002",
+        "note": "Synthetic/illustrative test record; the coordinate is not evidence of a real address."
+      },
+      "tags": ["reverse_geocoding", "coordinate_to_address", "offline_fixture"]
+    },
+    {
+      "id": "G-003",
+      "category": "G",
+      "subcategory": "geocode_reverse_chain",
+      "capability_family": "geocoding",
+      "title": "Geocode then reverse geocode a synthetic library",
+      "description": "Run a two-step tool chain: forward geocode a library, pass its synthetic coordinate to reverse geocoding, and verify both steps.",
+      "user_prompt": "Find 'Cedar Library' in Synthetic Bay, then reverse geocode its coordinate. Report the resulting street address.",
+      "input_spec": {
+        "type": "object",
+        "required": ["query", "region"],
+        "properties": {
+          "query": {"type": "string"},
+          "region": {"type": "string"}
+        },
+        "sample": {
+          "query": "Cedar Library",
+          "region": "Synthetic Bay"
+        }
+      },
+      "reference_tool_chain": [
+        {
+          "step_id": "geocode",
+          "tool": "geocode.forward",
+          "purpose": "Resolve Cedar Library to a synthetic location.",
+          "arguments": {
+            "query": "Cedar Library",
+            "region": "Synthetic Bay"
+          }
+        },
+        {
+          "step_id": "reverse",
+          "tool": "geocode.reverse",
+          "purpose": "Reverse geocode the location returned by the first step.",
+          "arguments": {
+            "lat": "$.steps.geocode.results[0].location.lat",
+            "lon": "$.steps.geocode.results[0].location.lon"
+          }
+        }
+      ],
+      "expected_tools": ["geocode.forward", "geocode.reverse"],
+      "success_criteria": [
+        {
+          "id": "library_place_id",
+          "target": "$.steps.geocode.results[0].place_id",
+          "operator": "equals",
+          "expected": "syn_poi_cedar_library"
+        },
+        {
+          "id": "reverse_address",
+          "target": "$.steps.reverse.results[0].formatted_address",
+          "operator": "contains",
+          "expected": "Cedar Lane"
+        },
+        {
+          "id": "reverse_address_id",
+          "target": "$.steps.reverse.results[0].place_id",
+          "operator": "equals",
+          "expected": "syn_addr_cedar_10"
+        }
+      ],
+      "oracle_type": "fixture_exact",
+      "assumptions": [
+        "The output of forward geocoding can be passed directly to reverse geocoding in the synthetic fixture world.",
+        "The library and address are fictional test records.",
+        "The chain is deterministic and has no retry or live fallback."
+      ],
+      "dynamic_data_handling": {
+        "strategy": "fixture_chain_pinned",
+        "freshness": "not_applicable",
+        "note": "Both steps use one frozen fixture generation; the coordinate is not refreshed from a live service."
+      },
+      "source": {
+        "kind": "synthetic",
+        "synthetic": true,
+        "fixture_id": "G-003",
+        "note": "Synthetic/illustrative chained response authored for this repository."
+      },
+      "tags": ["multi_step_tool_chain", "forward_geocoding", "reverse_geocoding", "argument_passing"]
+    },
+    {
+      "id": "P-001",
+      "category": "P",
+      "subcategory": "nearby_place_search",
+      "capability_family": "place_search",
+      "title": "Search cafes near a synthetic landmark",
+      "description": "Search a synthetic cafe category within 800 metres of Harbor Light and verify result count, nearest ID, and distance.",
+      "user_prompt": "Find cafes within 800 metres of Harbor Light and return the nearest result with its distance in metres.",
+      "input_spec": {
+        "type": "object",
+        "required": ["category", "center", "radius_m"],
+        "properties": {
+          "category": {"type": "string"},
+          "center": {"type": "object"},
+          "radius_m": {"type": "number"}
+        },
+        "sample": {
+          "category": "cafe",
+          "center": {"lat": 0.01, "lon": 0.02},
+          "radius_m": 800
+        }
+      },
+      "reference_tool_chain": [
+        {
+          "step_id": "search",
+          "tool": "places.search",
+          "purpose": "Search synthetic cafes near the fixture landmark and sort by distance.",
+          "arguments": {
+            "category": "cafe",
+            "center": {"lat": 0.01, "lon": 0.02},
+            "radius_m": 800,
+            "sort": "distance"
+          }
+        }
+      ],
+      "expected_tools": ["places.search"],
+      "success_criteria": [
+        {
+          "id": "two_results",
+          "target": "$.steps.search.result_count",
+          "operator": "equals",
+          "expected": 2
+        },
+        {
+          "id": "nearest_cafe_id",
+          "target": "$.steps.search.results[0].place_id",
+          "operator": "equals",
+          "expected": "syn_poi_cafe_a"
+        },
+        {
+          "id": "nearest_distance",
+          "target": "$.steps.search.results[0].distance_m",
+          "operator": "numeric_close",
+          "expected": 180.0,
+          "tolerance": 0.1
+        }
+      ],
+      "oracle_type": "fixture_tolerance",
+      "assumptions": [
+        "The synthetic search index contains exactly two cafes within the requested radius.",
+        "Distance sorting is ascending and uses the fixture's illustrative metre values.",
+        "Category matching is exact for this fixture."
+      ],
+      "dynamic_data_handling": {
+        "strategy": "fixture_pinned",
+        "freshness": "not_applicable",
+        "note": "No live POI inventory or opening-hours feed is queried."
+      },
+      "source": {
+        "kind": "synthetic",
+        "synthetic": true,
+        "fixture_id": "P-001",
+        "note": "Synthetic/illustrative place-search results; not a live Geoapify response."
+      },
+      "tags": ["place_search", "nearby", "distance_sort", "offline_fixture"]
+    },
+    {
+      "id": "P-002",
+      "category": "P",
+      "subcategory": "filtered_place_search",
+      "capability_family": "place_search",
+      "title": "Find an open pharmacy near a synthetic clinic",
+      "description": "Apply a synthetic opening-hours filter at a pinned timestamp and verify that exactly one pharmacy is reported open.",
+      "user_prompt": "At 09:30 UTC on 2026-10-21, find an open pharmacy within 500 metres of the synthetic clinic and report its place ID.",
+      "input_spec": {
+        "type": "object",
+        "required": ["category", "center", "radius_m", "open_at"],
+        "properties": {
+          "category": {"type": "string"},
+          "center": {"type": "object"},
+          "radius_m": {"type": "number"},
+          "open_at": {"type": "string", "format": "date-time"}
+        },
+        "sample": {
+          "category": "pharmacy",
+          "center": {"lat": 0.012, "lon": 0.025},
+          "radius_m": 500,
+          "open_at": "2026-10-21T09:30:00Z"
+        }
+      },
+      "reference_tool_chain": [
+        {
+          "step_id": "search",
+          "tool": "places.search",
+          "purpose": "Filter synthetic pharmacies by distance and the pinned opening-hours snapshot.",
+          "arguments": {
+            "category": "pharmacy",
+            "center": {"lat": 0.012, "lon": 0.025},
+            "radius_m": 500,
+            "open_at": "2026-10-21T09:30:00Z"
+          }
+        }
+      ],
+      "expected_tools": ["places.search"],
+      "success_criteria": [
+        {
+          "id": "one_open_pharmacy",
+          "target": "$.steps.search.result_count",
+          "operator": "equals",
+          "expected": 1
+        },
+        {
+          "id": "pharmacy_id",
+          "target": "$.steps.search.results[0].place_id",
+          "operator": "equals",
+          "expected": "syn_pharmacy_open"
+        },
+        {
+          "id": "open_flag",
+          "target": "$.steps.search.results[0].open_now",
+          "operator": "truthy"
+        }
+      ],
+      "oracle_type": "fixture_exact",
+      "assumptions": [
+        "The opening-hours snapshot is invented and valid only at the pinned synthetic timestamp.",
+        "The result count reflects the fixture's open-now filter.",
+        "No live timezone service or business-status service is called."
+      ],
+      "dynamic_data_handling": {
+        "strategy": "fixture_time_pinned",
+        "freshness": "synthetic_timestamp_2026-10-21T09:30:00Z",
+        "note": "The time is part of the fixture contract; a different time is outside this task's oracle."
+      },
+      "source": {
+        "kind": "synthetic",
+        "synthetic": true,
+        "fixture_id": "P-002",
+        "note": "Synthetic/illustrative opening-hours fixture; not verified business data."
+      },
+      "tags": ["place_search", "opening_hours", "time_pinned", "filter"]
+    },
+    {
+      "id": "P-003",
+      "category": "P",
+      "subcategory": "place_search_route_chain",
+      "capability_family": "place_search",
+      "title": "Find a cafe then route from the library",
+      "description": "Search for a nearby synthetic cafe, pass its location into route planning, and verify the selected cafe and synthetic route distance.",
+      "user_prompt": "Find the nearest cafe to Cedar Library and plan a walking route from the library to that cafe. Report the cafe ID and route distance.",
+      "input_spec": {
+        "type": "object",
+        "required": ["category", "origin", "radius_m"],
+        "properties": {
+          "category": {"type": "string"},
+          "origin": {"type": "object"},
+          "radius_m": {"type": "number"}
+        },
+        "sample": {
+          "category": "cafe",
+          "origin": {"lat": 0.005, "lon": 0.015},
+          "radius_m": 600
+        }
+      },
+      "reference_tool_chain": [
+        {
+          "step_id": "search",
+          "tool": "places.search",
+          "purpose": "Find the nearest synthetic cafe to Cedar Library.",
+          "arguments": {
+            "category": "cafe",
+            "center": {"lat": 0.005, "lon": 0.015},
+            "radius_m": 600,
+            "sort": "distance"
+          }
+        },
+        {
+          "step_id": "route",
+          "tool": "route.plan",
+          "purpose": "Plan a walking route from the library to the first cafe result.",
+          "arguments": {
+            "origin": {"lat": 0.005, "lon": 0.015},
+            "destination": "$.steps.search.results[0].location",
+            "profile": "foot-walking"
+          }
+        }
+      ],
+      "expected_tools": ["places.search", "route.plan"],
+      "success_criteria": [
+        {
+          "id": "cafe_id",
+          "target": "$.steps.search.results[0].place_id",
+          "operator": "equals",
+          "expected": "syn_poi_cafe_a"
+        },
+        {
+          "id": "route_destination_id",
+          "target": "$.steps.route.destination.place_id",
+          "operator": "equals",
+          "expected": "syn_poi_cafe_a"
+        },
+        {
+          "id": "route_distance",
+          "target": "$.steps.route.distance_m",
+          "operator": "numeric_close",
+          "expected": 240.0,
+          "tolerance": 0.1
+        }
+      ],
+      "oracle_type": "fixture_tolerance",
+      "assumptions": [
+        "The nearest cafe is deterministic in the fixture index.",
+        "The fixture route begins at Cedar Library and ends at the selected cafe.",
+        "Walking duration and route geometry are illustrative, not live traffic estimates."
+      ],
+      "dynamic_data_handling": {
+        "strategy": "fixture_chain_pinned",
+        "freshness": "not_applicable",
+        "note": "POI selection and route are frozen together; a live inventory or traffic change would invalidate this oracle."
+      },
+      "source": {
+        "kind": "synthetic",
+        "synthetic": true,
+        "fixture_id": "P-003",
+        "note": "Synthetic/illustrative POI and route records authored for this harness."
+      },
+      "tags": ["multi_step_tool_chain", "place_search", "route_planning", "argument_passing"]
+    },
+    {
+      "id": "R-001",
+      "category": "R",
+      "subcategory": "route_planning",
+      "capability_family": "route_planning",
+      "title": "Plan a walking route between two synthetic places",
+      "description": "Plan a synthetic walking route and verify distance, duration, and the number of legs returned by the route tool.",
+      "user_prompt": "Plan a walking route from Cedar Library to Harbor Light. Return the distance in metres, duration in seconds, and number of legs.",
+      "input_spec": {
+        "type": "object",
+        "required": ["origin", "destination", "profile"],
+        "properties": {
+          "origin": {"type": "object"},
+          "destination": {"type": "object"},
+          "profile": {"type": "string"}
+        },
+        "sample": {
+          "origin": {"lat": 0.005, "lon": 0.015},
+          "destination": {"lat": 0.01, "lon": 0.02},
+          "profile": "foot-walking"
+        }
+      },
+      "reference_tool_chain": [
+        {
+          "step_id": "route",
+          "tool": "route.plan",
+          "purpose": "Plan a synthetic walking route between the fixture places.",
+          "arguments": {
+            "origin": {"lat": 0.005, "lon": 0.015, "place_id": "syn_poi_cedar_library"},
+            "destination": {"lat": 0.01, "lon": 0.02, "place_id": "syn_poi_harbor_light"},
+            "profile": "foot-walking"
+          }
+        }
+      ],
+      "expected_tools": ["route.plan"],
+      "success_criteria": [
+        {
+          "id": "route_distance",
+          "target": "$.steps.route.distance_m",
+          "operator": "numeric_close",
+          "expected": 860.5,
+          "tolerance": 0.1
+        },
+        {
+          "id": "route_duration",
+          "target": "$.steps.route.duration_s",
+          "operator": "numeric_close",
+          "expected": 645.0,
+          "tolerance": 0.1
+        },
+        {
+          "id": "one_leg",
+          "target": "$.steps.route.legs",
+          "operator": "length_equals",
+          "expected": 1
+        }
+      ],
+      "oracle_type": "fixture_tolerance",
+      "assumptions": [
+        "The fixture route is a deterministic synthetic path, not a real network route.",
+        "Distance and duration are illustrative values, not traffic predictions.",
+        "One leg is expected for a direct route without waypoints."
+      ],
+      "dynamic_data_handling": {
+        "strategy": "fixture_pinned",
+        "freshness": "synthetic_snapshot",
+        "note": "No live traffic, closures, or routing graph are used."
+      },
+      "source": {
+        "kind": "synthetic",
+        "synthetic": true,
+        "fixture_id": "R-001",
+        "note": "Synthetic/illustrative route response; not a Geoapify route result."
+      },
+      "tags": ["route_planning", "walking", "single_leg", "offline_fixture"]
+    },
+    {
+      "id": "R-002",
+      "category": "R",
+      "subcategory": "route_distance_matrix",
+      "capability_family": "route_distance_matrix",
+      "title": "Build a synthetic 3 by 2 route distance matrix",
+      "description": "Request a route distance matrix for three synthetic origins and two destinations, then verify matrix dimensions and selected distances and durations.",
+      "user_prompt": "Build a driving distance matrix for three origins and two destinations. Report the full matrix dimensions and the distance and duration for origin 3 to destination 2.",
+      "input_spec": {
+        "type": "object",
+        "required": ["origins", "destinations", "profile"],
+        "properties": {
+          "origins": {"type": "array"},
+          "destinations": {"type": "array"},
+          "profile": {"type": "string"}
+        },
+        "sample": {
+          "origins": [
+            {"id": "origin_a", "lat": 0.001, "lon": 0.011},
+            {"id": "origin_b", "lat": 0.002, "lon": 0.012},
+            {"id": "origin_c", "lat": 0.003, "lon": 0.013}
+          ],
+          "destinations": [
+            {"id": "dest_x", "lat": 0.004, "lon": 0.014},
+            {"id": "dest_y", "lat": 0.005, "lon": 0.015}
+          ],
+          "profile": "driving-car"
+        }
+      },
+      "reference_tool_chain": [
+        {
+          "step_id": "matrix",
+          "tool": "route.matrix",
+          "purpose": "Return the frozen 3-by-2 synthetic driving matrix.",
+          "arguments": {
+            "origins": [
+              {"id": "origin_a", "lat": 0.001, "lon": 0.011},
+              {"id": "origin_b", "lat": 0.002, "lon": 0.012},
+              {"id": "origin_c", "lat": 0.003, "lon": 0.013}
+            ],
+            "destinations": [
+              {"id": "dest_x", "lat": 0.004, "lon": 0.014},
+              {"id": "dest_y", "lat": 0.005, "lon": 0.015}
+            ],
+            "profile": "driving-car",
+            "metrics": ["distance", "duration"]
+          }
+        }
+      ],
+      "expected_tools": ["route.matrix"],
+      "success_criteria": [
+        {
+          "id": "three_origin_rows",
+          "target": "$.steps.matrix.distances_m",
+          "operator": "length_equals",
+          "expected": 3
+        },
+        {
+          "id": "two_destination_columns",
+          "target": "$.steps.matrix.distances_m[0]",
+          "operator": "length_equals",
+          "expected": 2
+        },
+        {
+          "id": "last_cell_distance",
+          "target": "$.steps.matrix.distances_m[2][1]",
+          "operator": "numeric_close",
+          "expected": 600.0,
+          "tolerance": 0.1
+        },
+        {
+          "id": "middle_cell_duration",
+          "target": "$.steps.matrix.durations_s[1][1]",
+          "operator": "numeric_close",
+          "expected": 240.0,
+          "tolerance": 0.1
+        }
+      ],
+      "oracle_type": "fixture_tolerance",
+      "assumptions": [
+        "The matrix is synthetic and does not represent a real road network.",
+        "Rows follow the input origin order and columns follow the input destination order.",
+        "Values are illustrative and not live traffic estimates."
+      ],
+      "dynamic_data_handling": {
+        "strategy": "fixture_pinned",
+        "freshness": "synthetic_snapshot",
+        "note": "The matrix is frozen; live travel times would require a future, explicitly labelled live adapter."
+      },
+      "source": {
+        "kind": "synthetic",
+        "synthetic": true,
+        "fixture_id": "R-002",
+        "note": "Synthetic/illustrative matrix; no Geoapify matrix API was called."
+      },
+      "tags": ["route_distance_matrix", "matrix_dimensions", "driving", "offline_fixture"]
+    },
+    {
+      "id": "R-003",
+      "category": "R",
+      "subcategory": "waypoint_route",
+      "capability_family": "route_planning",
+      "title": "Plan a route with one synthetic waypoint",
+      "description": "Plan a two-leg synthetic walking route through a market waypoint and verify the total metric, leg count, and final destination.",
+      "user_prompt": "Plan a walking route from the station to the park gate via the market waypoint. Report total distance, duration, leg count, and the final destination ID.",
+      "input_spec": {
+        "type": "object",
+        "required": ["origin", "waypoints", "destination", "profile"],
+        "properties": {
+          "origin": {"type": "object"},
+          "waypoints": {"type": "array"},
+          "destination": {"type": "object"},
+          "profile": {"type": "string"}
+        },
+        "sample": {
+          "origin": {"lat": 0.001, "lon": 0.01},
+          "waypoints": [{"lat": 0.004, "lon": 0.016}],
+          "destination": {"lat": 0.009, "lon": 0.026},
+          "profile": "foot-walking"
+        }
+      },
+      "reference_tool_chain": [
+        {
+          "step_id": "route",
+          "tool": "route.plan",
+          "purpose": "Plan a synthetic walking route with one market waypoint.",
+          "arguments": {
+            "origin": {"lat": 0.001, "lon": 0.01, "place_id": "syn_poi_station"},
+            "waypoints": [
+              {"lat": 0.004, "lon": 0.016, "place_id": "syn_poi_market"}
+            ],
+            "destination": {"lat": 0.009, "lon": 0.026, "place_id": "syn_poi_park_gate"},
+            "profile": "foot-walking"
+          }
+        }
+      ],
+      "expected_tools": ["route.plan"],
+      "success_criteria": [
+        {
+          "id": "route_distance",
+          "target": "$.steps.route.distance_m",
+          "operator": "numeric_close",
+          "expected": 1450.0,
+          "tolerance": 0.1
+        },
+        {
+          "id": "route_duration",
+          "target": "$.steps.route.duration_s",
+          "operator": "numeric_close",
+          "expected": 1080.0,
+          "tolerance": 0.1
+        },
+        {
+          "id": "two_legs",
+          "target": "$.steps.route.legs",
+          "operator": "length_equals",
+          "expected": 2
+        },
+        {
+          "id": "final_destination",
+          "target": "$.steps.route.legs[1].destination.place_id",
+          "operator": "equals",
+          "expected": "syn_poi_park_gate"
+        }
+      ],
+      "oracle_type": "fixture_tolerance",
+      "assumptions": [
+        "One waypoint creates two legs in the synthetic route.",
+        "The fixture uses the input waypoint order without re-optimization.",
+        "All names and metrics are fictional test values."
+      ],
+      "dynamic_data_handling": {
+        "strategy": "fixture_pinned",
+        "freshness": "synthetic_snapshot",
+        "note": "No live waypoint optimization or traffic data is used."
+      },
+      "source": {
+        "kind": "synthetic",
+        "synthetic": true,
+        "fixture_id": "R-003",
+        "note": "Synthetic/illustrative waypoint route; not a live routing response."
+      },
+      "tags": ["route_planning", "waypoint", "multi_leg", "walking"]
+    },
+    {
+      "id": "R-004",
+      "category": "R",
+      "subcategory": "matrix_plan_reverse_chain",
+      "capability_family": "route_distance_matrix",
+      "title": "Matrix, route, and reverse geocode in one chain",
+      "description": "Run a synthetic route matrix, plan the selected pair, reverse geocode the destination, and verify that the shared distance and address are consistent.",
+      "user_prompt": "Use the matrix to find the library-to-market driving distance, plan that route, then reverse geocode the market destination. Report the distance and destination address.",
+      "input_spec": {
+        "type": "object",
+        "required": ["origins", "destinations", "profile"],
+        "properties": {
+          "origins": {"type": "array"},
+          "destinations": {"type": "array"},
+          "profile": {"type": "string"}
+        },
+        "sample": {
+          "origins": [
+            {"id": "station", "lat": 0.001, "lon": 0.011},
+            {"id": "library", "lat": 0.005, "lon": 0.015}
+          ],
+          "destinations": [
+            {"id": "market", "lat": 0.004, "lon": 0.016},
+            {"id": "clinic", "lat": 0.012, "lon": 0.025}
+          ],
+          "profile": "driving-car"
+        }
+      },
+      "reference_tool_chain": [
+        {
+          "step_id": "matrix",
+          "tool": "route.matrix",
+          "purpose": "Create a frozen 2-by-2 synthetic driving matrix.",
+          "arguments": {
+            "origins": [
+              {"id": "station", "lat": 0.001, "lon": 0.011},
+              {"id": "library", "lat": 0.005, "lon": 0.015}
+            ],
+            "destinations": [
+              {"id": "market", "lat": 0.004, "lon": 0.016},
+              {"id": "clinic", "lat": 0.012, "lon": 0.025}
+            ],
+            "profile": "driving-car"
+          }
+        },
+        {
+          "step_id": "plan",
+          "tool": "route.plan",
+          "purpose": "Plan the library-to-market pair represented by matrix cell [1][0].",
+          "arguments": {
+            "origin": {"lat": 0.005, "lon": 0.015, "place_id": "syn_poi_cedar_library"},
+            "destination": {"lat": 0.004, "lon": 0.016, "place_id": "syn_poi_market"},
+            "profile": "driving-car"
+          }
+        },
+        {
+          "step_id": "reverse",
+          "tool": "geocode.reverse",
+          "purpose": "Resolve the market destination to a synthetic address.",
+          "arguments": {
+            "lat": 0.004,
+            "lon": 0.016
+          }
+        }
+      ],
+      "expected_tools": ["route.matrix", "route.plan", "geocode.reverse"],
+      "success_criteria": [
+        {
+          "id": "matrix_cell_distance",
+          "target": "$.steps.matrix.distances_m[1][0]",
+          "operator": "numeric_close",
+          "expected": 310.0,
+          "tolerance": 0.1
+        },
+        {
+          "id": "planned_distance_matches",
+          "target": "$.steps.plan.distance_m",
+          "operator": "numeric_close",
+          "expected": 310.0,
+          "tolerance": 0.1
+        },
+        {
+          "id": "market_address",
+          "target": "$.steps.reverse.results[0].formatted_address",
+          "operator": "contains",
+          "expected": "Market Square"
+        }
+      ],
+      "oracle_type": "fixture_tolerance",
+      "assumptions": [
+        "Matrix cell [1][0] corresponds to the library-to-market pair.",
+        "The synthetic matrix and the planned route share the same fabricated distance.",
+        "The address is fictional and only tests chain consistency."
+      ],
+      "dynamic_data_handling": {
+        "strategy": "fixture_chain_pinned",
+        "freshness": "synthetic_snapshot",
+        "note": "Matrix, route, and address are frozen together; no live traffic or geocoder is used."
+      },
+      "source": {
+        "kind": "synthetic",
+        "synthetic": true,
+        "fixture_id": "R-004",
+        "note": "Synthetic/illustrative matrix, route, and address records; not live results."
+      },
+      "tags": ["multi_step_tool_chain", "route_distance_matrix", "route_planning", "reverse_geocoding"]
+    },
+    {
+      "id": "S-001",
+      "category": "S",
+      "subcategory": "spatial_relation",
+      "capability_family": "spatial_relation",
+      "title": "Point-in-polygon on a synthetic zone",
+      "description": "Test whether a synthetic point lies within a synthetic polygon and verify the relation label and boolean answer.",
+      "user_prompt": "Test whether the synthetic point at x=20, y=30 lies within the Cedar Green polygon. Return the relation and boolean result.",
+      "input_spec": {
+        "type": "object",
+        "required": ["subject", "object", "relation"],
+        "properties": {
+          "subject": {"type": "object"},
+          "object": {"type": "object"},
+          "relation": {"type": "string"}
+        },
+        "sample": {
+          "subject": {"x_m": 20, "y_m": 30},
+          "object": {"zone_id": "syn_zone_cedar_green"},
+          "relation": "within"
+        }
+      },
+      "reference_tool_chain": [
+        {
+          "step_id": "relate",
+          "tool": "spatial.relate",
+          "purpose": "Evaluate the synthetic point-in-polygon relation.",
+          "arguments": {
+            "subject": {"type": "point", "x_m": 20, "y_m": 30},
+            "object": {"type": "polygon", "zone_id": "syn_zone_cedar_green"},
+            "relation": "within"
+          }
+        }
+      ],
+      "expected_tools": ["spatial.relate"],
+      "success_criteria": [
+        {
+          "id": "within_result",
+          "target": "$.steps.relate.value",
+          "operator": "truthy"
+        },
+        {
+          "id": "relation_label",
+          "target": "$.steps.relate.relation",
+          "operator": "equals",
+          "expected": "within"
+        }
+      ],
+      "oracle_type": "fixture_boolean",
+      "assumptions": [
+        "The point and polygon are synthetic local-plane geometry, not real survey data.",
+        "The fixture defines the polygon boundary unambiguously.",
+        "The tested point is not on a boundary edge."
+      ],
+      "dynamic_data_handling": {
+        "strategy": "fixture_pinned",
+        "freshness": "not_applicable",
+        "note": "Geometry is frozen with the fixture; no external basemap or parcel service is queried."
+      },
+      "source": {
+        "kind": "synthetic",
+        "synthetic": true,
+        "fixture_id": "S-001",
+        "note": "Synthetic/illustrative geometry result; not a real spatial analysis."
+      },
+      "tags": ["spatial_relation", "point_in_polygon", "local_plane", "offline_fixture"]
+    },
+    {
+      "id": "S-002",
+      "category": "S",
+      "subcategory": "line_polygon_relation",
+      "capability_family": "spatial_relation",
+      "title": "Line and polygon intersection",
+      "description": "Test whether a synthetic path intersects a synthetic conservation zone and verify the boolean relation.",
+      "user_prompt": "Check whether the synthetic survey path crosses the Cedar Green conservation zone. Return the relation and boolean result.",
+      "input_spec": {
+        "type": "object",
+        "required": ["subject", "object", "relation"],
+        "properties": {
+          "subject": {"type": "object"},
+          "object": {"type": "object"},
+          "relation": {"type": "string"}
+        },
+        "sample": {
+          "subject": {"line_id": "syn_path_survey_01"},
+          "object": {"zone_id": "syn_zone_cedar_green"},
+          "relation": "intersects"
+        }
+      },
+      "reference_tool_chain": [
+        {
+          "step_id": "relate",
+          "tool": "spatial.relate",
+          "purpose": "Evaluate the synthetic line-polygon intersection relation.",
+          "arguments": {
+            "subject": {"type": "line", "line_id": "syn_path_survey_01"},
+            "object": {"type": "polygon", "zone_id": "syn_zone_cedar_green"},
+            "relation": "intersects"
+          }
+        }
+      ],
+      "expected_tools": ["spatial.relate"],
+      "success_criteria": [
+        {
+          "id": "intersects_result",
+          "target": "$.steps.relate.value",
+          "operator": "truthy"
+        },
+        {
+          "id": "relation_label",
+          "target": "$.steps.relate.relation",
+          "operator": "equals",
+          "expected": "intersects"
+        }
+      ],
+      "oracle_type": "fixture_boolean",
+      "assumptions": [
+        "The line and polygon are synthetic local-plane geometries.",
+        "Touching only at an endpoint is not part of this fixture case.",
+        "No real conservation boundary is represented."
+      ],
+      "dynamic_data_handling": {
+        "strategy": "fixture_pinned",
+        "freshness": "not_applicable",
+        "note": "The synthetic geometry is frozen; no external map layer is fetched."
+      },
+      "source": {
+        "kind": "synthetic",
+        "synthetic": true,
+        "fixture_id": "S-002",
+        "note": "Synthetic/illustrative spatial relation; not a verified real-world intersection."
+      },
+      "tags": ["spatial_relation", "line_polygon", "intersects", "offline_fixture"]
+    },
+    {
+      "id": "S-003",
+      "category": "S",
+      "subcategory": "distance_relation",
+      "capability_family": "spatial_relation",
+      "title": "Within-distance relation for a synthetic point",
+      "description": "Test whether a synthetic point is within 200 metres of a synthetic zone and verify the measured distance and threshold.",
+      "user_prompt": "Check whether the synthetic point is within 200 metres of the Cedar Green zone. Report the boolean result and measured distance.",
+      "input_spec": {
+        "type": "object",
+        "required": ["subject", "object", "threshold_m"],
+        "properties": {
+          "subject": {"type": "object"},
+          "object": {"type": "object"},
+          "threshold_m": {"type": "number"}
+        },
+        "sample": {
+          "subject": {"x_m": 320, "y_m": 40},
+          "object": {"zone_id": "syn_zone_cedar_green"},
+          "threshold_m": 200
+        }
+      },
+      "reference_tool_chain": [
+        {
+          "step_id": "relate",
+          "tool": "spatial.relate",
+          "purpose": "Evaluate the synthetic within-distance relation and return the fabricated distance.",
+          "arguments": {
+            "subject": {"type": "point", "x_m": 320, "y_m": 40},
+            "object": {"type": "polygon", "zone_id": "syn_zone_cedar_green"},
+            "relation": "within_distance",
+            "threshold_m": 200
+          }
+        }
+      ],
+      "expected_tools": ["spatial.relate"],
+      "success_criteria": [
+        {
+          "id": "within_distance_result",
+          "target": "$.steps.relate.value",
+          "operator": "truthy"
+        },
+        {
+          "id": "distance_value",
+          "target": "$.steps.relate.distance_m",
+          "operator": "numeric_close",
+          "expected": 150.0,
+          "tolerance": 0.1
+        },
+        {
+          "id": "distance_under_threshold",
+          "target": "$.steps.relate.distance_m",
+          "operator": "lte",
+          "expected": 200
+        }
+      ],
+      "oracle_type": "fixture_tolerance",
+      "assumptions": [
+        "The point-to-zone distance is a fabricated fixture value, not a geodesic computation.",
+        "The threshold is in the same local metre unit as the fixture.",
+        "The zone geometry is synthetic and not a legal boundary."
+      ],
+      "dynamic_data_handling": {
+        "strategy": "fixture_pinned",
+        "freshness": "not_applicable",
+        "note": "Distance and threshold are frozen together; no live geometry service is used."
+      },
+      "source": {
+        "kind": "synthetic",
+        "synthetic": true,
+        "fixture_id": "S-003",
+        "note": "Synthetic/illustrative distance relation; not a real proximity finding."
+      },
+      "tags": ["spatial_relation", "within_distance", "threshold", "local_plane"]
+    },
+    {
+      "id": "S-004",
+      "category": "S",
+      "subcategory": "geocode_spatial_chain",
+      "capability_family": "spatial_relation",
+      "title": "Geocode a library then test its synthetic zone",
+      "description": "Run a two-step chain: geocode Cedar Library, use its synthetic local coordinates as the subject, and test whether it lies in Cedar Green.",
+      "user_prompt": "Geocode Cedar Library and test whether its synthetic local location lies within the Cedar Green zone. Report the boolean result and zone ID.",
+      "input_spec": {
+        "type": "object",
+        "required": ["query", "region", "zone_id"],
+        "properties": {
+          "query": {"type": "string"},
+          "region": {"type": "string"},
+          "zone_id": {"type": "string"}
+        },
+        "sample": {
+          "query": "Cedar Library",
+          "region": "Synthetic Bay",
+          "zone_id": "syn_zone_cedar_green"
+        }
+      },
+      "reference_tool_chain": [
+        {
+          "step_id": "geocode",
+          "tool": "geocode.forward",
+          "purpose": "Resolve the synthetic library and its local-plane fixture coordinates.",
+          "arguments": {
+            "query": "Cedar Library",
+            "region": "Synthetic Bay"
+          }
+        },
+        {
+          "step_id": "relate",
+          "tool": "spatial.relate",
+          "purpose": "Use the geocoded local point as the subject of the synthetic zone test.",
+          "arguments": {
+            "subject": "$.steps.geocode.results[0].local_xy",
+            "object": {"type": "polygon", "zone_id": "syn_zone_cedar_green"},
+            "relation": "within"
+          }
+        }
+      ],
+      "expected_tools": ["geocode.forward", "spatial.relate"],
+      "success_criteria": [
+        {
+          "id": "within_result",
+          "target": "$.steps.relate.value",
+          "operator": "truthy"
+        },
+        {
+          "id": "relation_label",
+          "target": "$.steps.relate.relation",
+          "operator": "equals",
+          "expected": "within"
+        },
+        {
+          "id": "zone_id",
+          "target": "$.steps.relate.object_id",
+          "operator": "equals",
+          "expected": "syn_zone_cedar_green"
+        }
+      ],
+      "oracle_type": "fixture_boolean",
+      "assumptions": [
+        "The geocoded record includes invented local-plane coordinates specifically for this synthetic chain.",
+        "The library location is not a real survey point.",
+        "The zone fixture is frozen and unambiguous."
+      ],
+      "dynamic_data_handling": {
+        "strategy": "fixture_chain_pinned",
+        "freshness": "not_applicable",
+        "note": "The place record and zone relation are a single pinned fixture scenario."
+      },
+      "source": {
+        "kind": "synthetic",
+        "synthetic": true,
+        "fixture_id": "S-004",
+        "note": "Synthetic/illustrative geocode-plus-spatial chain; not a live result."
+      },
+      "tags": ["multi_step_tool_chain", "spatial_relation", "geocoding", "argument_passing"]
+    },
+    {
+      "id": "M-001",
+      "category": "M",
+      "subcategory": "geometric_measurement",
+      "capability_family": "geometric_measurement",
+      "title": "Measure distance on a synthetic local plane",
+      "description": "Measure the planar distance between two synthetic points and verify the value and metre unit.",
+      "user_prompt": "Measure the distance between the synthetic points (0, 0) and (300, 400) on the local metre plane. Return the value and unit.",
+      "input_spec": {
+        "type": "object",
+        "required": ["points", "crs"],
+        "properties": {
+          "points": {"type": "array"},
+          "crs": {"type": "string"}
+        },
+        "sample": {
+          "points": [
+            {"x_m": 0, "y_m": 0},
+            {"x_m": 300, "y_m": 400}
+          ],
+          "crs": "local_equirectangular_m"
+        }
+      },
+      "reference_tool_chain": [
+        {
+          "step_id": "measure",
+          "tool": "geometry.measure",
+          "purpose": "Measure the synthetic planar distance between two points.",
+          "arguments": {
+            "operation": "distance",
+            "points": [
+              {"x_m": 0, "y_m": 0},
+              {"x_m": 300, "y_m": 400}
+            ],
+            "crs": "local_equirectangular_m"
+          }
+        }
+      ],
+      "expected_tools": ["geometry.measure"],
+      "success_criteria": [
+        {
+          "id": "distance_value",
+          "target": "$.steps.measure.value",
+          "operator": "numeric_close",
+          "expected": 500.0,
+          "tolerance": 0.001
+        },
+        {
+          "id": "distance_unit",
+          "target": "$.steps.measure.unit",
+          "operator": "equals",
+          "expected": "m"
+        }
+      ],
+      "oracle_type": "fixture_tolerance",
+      "assumptions": [
+        "Coordinates are local-plane metres, not longitude and latitude.",
+        "Planar Euclidean distance is the intended synthetic measurement.",
+        "The value is an illustrative fixture, not a survey result."
+      ],
+      "dynamic_data_handling": {
+        "strategy": "fixture_pinned",
+        "freshness": "not_applicable",
+        "note": "Geometry and expected value are frozen together; no live projection service is used."
+      },
+      "source": {
+        "kind": "synthetic",
+        "synthetic": true,
+        "fixture_id": "M-001",
+        "note": "Synthetic/illustrative geometric measurement; not a real-world survey."
+      },
+      "tags": ["geometric_measurement", "distance", "local_plane", "offline_fixture"]
+    },
+    {
+      "id": "M-002",
+      "category": "M",
+      "subcategory": "polygon_area",
+      "capability_family": "geometric_measurement",
+      "title": "Measure the area of a synthetic polygon",
+      "description": "Measure a synthetic 100-by-50 metre rectangle and verify the square-metre result.",
+      "user_prompt": "Measure the area of the synthetic rectangle with vertices (0,0), (100,0), (100,50), and (0,50). Return the value and unit.",
+      "input_spec": {
+        "type": "object",
+        "required": ["polygon", "crs"],
+        "properties": {
+          "polygon": {"type": "array"},
+          "crs": {"type": "string"}
+        },
+        "sample": {
+          "polygon": [
+            {"x_m": 0, "y_m": 0},
+            {"x_m": 100, "y_m": 0},
+            {"x_m": 100, "y_m": 50},
+            {"x_m": 0, "y_m": 50}
+          ],
+          "crs": "local_equirectangular_m"
+        }
+      },
+      "reference_tool_chain": [
+        {
+          "step_id": "measure",
+          "tool": "geometry.measure",
+          "purpose": "Measure the area of the synthetic rectangle.",
+          "arguments": {
+            "operation": "area",
+            "polygon": [
+              {"x_m": 0, "y_m": 0},
+              {"x_m": 100, "y_m": 0},
+              {"x_m": 100, "y_m": 50},
+              {"x_m": 0, "y_m": 50}
+            ],
+            "crs": "local_equirectangular_m"
+          }
+        }
+      ],
+      "expected_tools": ["geometry.measure"],
+      "success_criteria": [
+        {
+          "id": "area_value",
+          "target": "$.steps.measure.value",
+          "operator": "numeric_close",
+          "expected": 5000.0,
+          "tolerance": 0.001
+        },
+        {
+          "id": "area_unit",
+          "target": "$.steps.measure.unit",
+          "operator": "equals",
+          "expected": "m2"
+        }
+      ],
+      "oracle_type": "fixture_tolerance",
+      "assumptions": [
+        "The polygon is a simple, non-self-intersecting synthetic rectangle.",
+        "Coordinates are local-plane metres.",
+        "No real parcel or land-cover boundary is represented."
+      ],
+      "dynamic_data_handling": {
+        "strategy": "fixture_pinned",
+        "freshness": "not_applicable",
+        "note": "The polygon and expected area are frozen fixture data."
+      },
+      "source": {
+        "kind": "synthetic",
+        "synthetic": true,
+        "fixture_id": "M-002",
+        "note": "Synthetic/illustrative area fixture; not a cadastral measurement."
+      },
+      "tags": ["geometric_measurement", "area", "polygon", "local_plane"]
+    },
+    {
+      "id": "M-003",
+      "category": "M",
+      "subcategory": "bearing_midpoint",
+      "capability_family": "geometric_measurement",
+      "title": "Measure bearing and midpoint on a synthetic plane",
+      "description": "Measure the synthetic bearing and midpoint from (0,0) to (100,100) and verify both returned components.",
+      "user_prompt": "For the synthetic local-plane segment from (0,0) to (100,100), report the bearing in degrees and the midpoint.",
+      "input_spec": {
+        "type": "object",
+        "required": ["points", "crs"],
+        "properties": {
+          "points": {"type": "array"},
+          "crs": {"type": "string"}
+        },
+        "sample": {
+          "points": [
+            {"x_m": 0, "y_m": 0},
+            {"x_m": 100, "y_m": 100}
+          ],
+          "crs": "local_equirectangular_m"
+        }
+      },
+      "reference_tool_chain": [
+        {
+          "step_id": "measure",
+          "tool": "geometry.measure",
+          "purpose": "Measure the synthetic bearing and midpoint of one segment.",
+          "arguments": {
+            "operation": "bearing_midpoint",
+            "points": [
+              {"x_m": 0, "y_m": 0},
+              {"x_m": 100, "y_m": 100}
+            ],
+            "crs": "local_equirectangular_m"
+          }
+        }
+      ],
+      "expected_tools": ["geometry.measure"],
+      "success_criteria": [
+        {
+          "id": "bearing_value",
+          "target": "$.steps.measure.value",
+          "operator": "numeric_close",
+          "expected": 45.0,
+          "tolerance": 0.001
+        },
+        {
+          "id": "midpoint_x",
+          "target": "$.steps.measure.midpoint.x_m",
+          "operator": "numeric_close",
+          "expected": 50.0,
+          "tolerance": 0.001
+        },
+        {
+          "id": "midpoint_y",
+          "target": "$.steps.measure.midpoint.y_m",
+          "operator": "numeric_close",
+          "expected": 50.0,
+          "tolerance": 0.001
+        }
+      ],
+      "oracle_type": "fixture_tolerance",
+      "assumptions": [
+        "Bearing is measured clockwise from local north on a synthetic plane.",
+        "The segment is diagonal with equal east and north components.",
+        "The values are illustrative and not a navigation-grade measurement."
+      ],
+      "dynamic_data_handling": {
+        "strategy": "fixture_pinned",
+        "freshness": "not_applicable",
+        "note": "The synthetic segment is fixed; no magnetic declination or live navigation data is used."
+      },
+      "source": {
+        "kind": "synthetic",
+        "synthetic": true,
+        "fixture_id": "M-003",
+        "note": "Synthetic/illustrative bearing and midpoint fixture; not a field observation."
+      },
+      "tags": ["geometric_measurement", "bearing", "midpoint", "local_plane"]
+    },
+    {
+      "id": "M-004",
+      "category": "M",
+      "subcategory": "polyline_chain",
+      "capability_family": "geometric_measurement",
+      "title": "Measure a synthetic polyline in three steps",
+      "description": "Measure two synthetic segment lengths and the total polyline length in a three-call chain, verifying each recorded value.",
+      "user_prompt": "Measure the synthetic polyline through (0,0), (300,400), and (300,900). Report both segment lengths and the total length.",
+      "input_spec": {
+        "type": "object",
+        "required": ["points", "crs"],
+        "properties": {
+          "points": {"type": "array"},
+          "crs": {"type": "string"}
+        },
+        "sample": {
+          "points": [
+            {"x_m": 0, "y_m": 0},
+            {"x_m": 300, "y_m": 400},
+            {"x_m": 300, "y_m": 900}
+          ],
+          "crs": "local_equirectangular_m"
+        }
+      },
+      "reference_tool_chain": [
+        {
+          "step_id": "segment_1",
+          "tool": "geometry.measure",
+          "purpose": "Measure the first synthetic segment.",
+          "arguments": {
+            "operation": "distance",
+            "points": [
+              {"x_m": 0, "y_m": 0},
+              {"x_m": 300, "y_m": 400}
+            ],
+            "crs": "local_equirectangular_m"
+          }
+        },
+        {
+          "step_id": "segment_2",
+          "tool": "geometry.measure",
+          "purpose": "Measure the second synthetic segment.",
+          "arguments": {
+            "operation": "distance",
+            "points": [
+              {"x_m": 300, "y_m": 400},
+              {"x_m": 300, "y_m": 900}
+            ],
+            "crs": "local_equirectangular_m"
+          }
+        },
+        {
+          "step_id": "total",
+          "tool": "geometry.measure",
+          "purpose": "Measure the total synthetic polyline length.",
+          "arguments": {
+            "operation": "polyline_length",
+            "points": [
+              {"x_m": 0, "y_m": 0},
+              {"x_m": 300, "y_m": 400},
+              {"x_m": 300, "y_m": 900}
+            ],
+            "crs": "local_equirectangular_m"
+          }
+        }
+      ],
+      "expected_tools": ["geometry.measure"],
+      "success_criteria": [
+        {
+          "id": "first_segment",
+          "target": "$.steps.segment_1.value",
+          "operator": "numeric_close",
+          "expected": 500.0,
+          "tolerance": 0.001
+        },
+        {
+          "id": "second_segment",
+          "target": "$.steps.segment_2.value",
+          "operator": "numeric_close",
+          "expected": 500.0,
+          "tolerance": 0.001
+        },
+        {
+          "id": "total_length",
+          "target": "$.steps.total.value",
+          "operator": "numeric_close",
+          "expected": 1000.0,
+          "tolerance": 0.001
+        },
+        {
+          "id": "length_unit",
+          "target": "$.steps.total.unit",
+          "operator": "equals",
+          "expected": "m"
+        }
+      ],
+      "oracle_type": "fixture_tolerance",
+      "assumptions": [
+        "All coordinates are local-plane metres.",
+        "The polyline is traversed in the listed order.",
+        "The total is the sum of the two synthetic segments."
+      ],
+      "dynamic_data_handling": {
+        "strategy": "fixture_chain_pinned",
+        "freshness": "not_applicable",
+        "note": "The full polyline and all expected values are one frozen fixture scenario."
+      },
+      "source": {
+        "kind": "synthetic",
+        "synthetic": true,
+        "fixture_id": "M-004",
+        "note": "Synthetic/illustrative polyline measurement; not a real route survey."
+      },
+      "tags": ["multi_step_tool_chain", "geometric_measurement", "polyline", "offline_fixture"]
+    }
+  ]
+}

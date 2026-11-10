@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "geoagent-reliability-lab"
+version = "0.1.0"
+description = "A synthetic, offline-first reliability harness for geospatial agent tool chains"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "GeoAgent Reliability Lab contributors" }]
+keywords = ["geospatial", "agent", "reliability", "evaluation", "benchmark"]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = []
+
+[project.scripts]
+geoagent-lab = "geoagent_reliability_lab.cli:main"
+
+[tool.setuptools]
+packages = ["geoagent_reliability_lab"]
+
+[tool.setuptools.package-data]
+geoagent_reliability_lab = ["py.typed"]
