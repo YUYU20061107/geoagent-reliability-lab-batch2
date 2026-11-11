@@ -17,7 +17,7 @@ python -m geoagent_reliability_lab list
 python tools/run_regression.py
 ~~~
 
-The registry contains 18 synthetic tasks (G=3, P=3, R=4, S=4, M=4) and 25 step fixtures. The current clean candidate passed **137/137 discovered unit tests** on CPython 3.12 during assembly. The M6 regression suite separately exercises 39 offline cases.
+The registry contains 18 synthetic tasks (G=3, P=3, R=4, S=4, M=4) and 25 step fixtures. The initial clean candidate passed **137/137 unit tests**. After adding the offline time-zone normalization tests, the revised candidate passed **141/141 discovered unit tests** on CPython 3.12. The M6 regression suite separately exercises 39 offline cases.
 
 ## 2. Run and independently evaluate synthetic examples
 

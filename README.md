@@ -44,6 +44,8 @@ This clean public version intentionally excludes historical M5-S0 sealed evidenc
 
 **R1-PILOT-01, November 10, 2026:** A separately authorized, two-call live run executed geocode_address followed by reverse_geocode_coordinates. The reverse request used the actual coordinate values from the preceding live geocode response: **52.5172707, 13.3978233**. Technical field-lineage checks passed, while the **independent geographic Oracle remained UNKNOWN**. The two R1 calls are not added to LIVE-FB-10's ten-call statistics.
 
+**LIVE-REPEAT-12X3, November 11, 2026:** A separate bounded experiment made 36 real MCP tools/call requests, three for each of the 12 observed tools. All 36 were tool-level successes; the original internal checks yielded **33 PASS / 3 UNKNOWN / 0 FAIL**. All three UNKNOWN cases were time-zone response normalization gaps. The three original captured time-zone replies subsequently normalized successfully in a strictly offline adapter fix. This is not a geographic accuracy claim. See the [repeatability pilot](docs/LIVE_REPEAT_12X3_20261111.md).
+
 **Formal research governance is unchanged:** NO_GO, REAL18 0/18, G10 CLOSED, batch_2_authorized=false. These internal governance values are not vendor acceptance decisions.
 
 See [live results](docs/LIVE_FB10_RESULTS.md), [results overview](RESULTS_REPORT.md), and [known limitations](KNOWN_LIMITATIONS.md).
@@ -65,6 +67,7 @@ Read the [step-by-step MCP walkthrough](docs/REAL_MCP_WALKTHROUGH.md) before usi
 - [Tutorial](TUTORIAL.md)
 - [Reproduction and test commands](REPRODUCTION.md)
 - [Results and evidence tiers](RESULTS_REPORT.md)
+- [November 11 real MCP repeatability pilot](docs/LIVE_REPEAT_12X3_20261111.md)
 - [Failure taxonomy](FAILURE_TAXONOMY.md)
 - [AI prompts and development workflow](AI_WORKFLOW.md)
 - [Geoapify MCP/OpenAPI feedback](GEOAPIFY_FEEDBACK.md)

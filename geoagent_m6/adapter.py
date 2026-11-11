@@ -47,6 +47,7 @@ TOOL_FOR_CAPABILITY: dict[str, str] = {
     "geocode.forward": "geocode_address",
     "geocode.structured": "geocode_structured_address",
     "geocode.reverse": "reverse_geocode_coordinates",
+    "timezone.lookup": "get_timezone",
     "places.search": "search_places",
     "places.categories": "list_place_categories",
     "route.route": "calculate_route",
@@ -318,6 +319,22 @@ def _normalise(tool: str, payload: Any, reader: FieldReader) -> dict[str, Any]:
             "declared_type": declared,
             "key_used": "typed_envelope.data",
             "units": payload.get("units") if isinstance(payload, Mapping) else None,
+        }
+
+    if tool == "get_timezone":
+        zones = reader.get("timezones") if isinstance(payload, Mapping) else None
+        first = zones[0] if isinstance(zones, list) and zones and isinstance(zones[0], Mapping) else None
+        name = first.get("name") if first else None
+        offset = first.get("offset_seconds") if first else None
+        if first is not None:
+            reader.note("timezones[0].name", name)
+            reader.note("timezones[0].offset_seconds", offset)
+        return {
+            "timezone_name": name if isinstance(name, str) and name.strip() else None,
+            "utc_offset_seconds": offset if type(offset) is int and -50400 <= offset <= 50400 else None,
+            "timezone_count": len(zones) if isinstance(zones, list) else None,
+            "tzdb_version": reader.get("tzdb_version") if isinstance(payload, Mapping) else None,
+            "source_shape": "timezones" if isinstance(zones, list) else "none",
         }
 
     if tool == "list_place_categories":
@@ -605,6 +622,13 @@ def adapt(
         check("snapping", INVALID_ARGUMENT, v.reason_code)
         return finish(v, read=read, payload=payload, consumed=consumed, kind=kind, meta=meta)
     check("snapping", SUCCESS, "SNAPPING_POLICY_SATISFIED", plan=geo.snapping_plan().to_dict())
+
+    if tool == "get_timezone":
+        if read.get("timezone_name") is None or read.get("utc_offset_seconds") is None:
+            v = verdict(EVIDENCE_MISSING, "TIMEZONE_NAME_OR_OFFSET_MISSING")
+            check("timezone_fields", EVIDENCE_MISSING, v.reason_code)
+            return finish(v, read=read, payload=payload, consumed=consumed, kind=kind, meta=meta)
+        check("timezone_fields", SUCCESS, "TIMEZONE_NAME_AND_OFFSET_READ")
 
     if tool in _GEOCODING_TOOLS or tool == "list_place_categories":
         if read.get("source_shape") == "none":
