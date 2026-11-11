@@ -39,6 +39,14 @@ Three new geocode-to-reverse chains independently verified downstream request ar
 
 Read [the 12-tool, 36-call report](docs/LIVE_REPEAT_12X3_20261111.md) for the full evidence boundaries.
 
+## Partial 12 x 100 live MCP stress study (2026-11-11)
+
+A bounded stress study planned 100 real requests for each of 12 observed MCP tools, or 1,200 total. It was **not completed**: 232 attempts produced **228 captured successful tool replies and four ambiguous transport errors**, while 968 cases were never attempted. The four transport errors are not proven provider defects and were not automatically retried.
+
+On the **228 received replies only**, the project's internal smoke checks yielded **228 PASS / 0 UNKNOWN / 0 FAIL**. A separate inspection matched all 228 response SHA256 fingerprints and all 482 entries in the four private evidence inventories. Local reserved credits totaled **269.0**, but actual provider-billed credits were not observed. All four temporary authorizations were revoked and no attempted case ID was repeated.
+
+Most variable-input cases were not reached. These results do **not** demonstrate 1,200 successful calls, an independent geographic accuracy metric, or a complete formal REAL18 benchmark. Read the [partial stress-test report](docs/LIVE_STRESS_12X100_PARTIAL_20261111.md) for per-tool counts and limitations.
+
 ## Scientific boundary
 
 PASS, FAIL and UNKNOWN represent declared checks, not a statistically validated provider error rate. In particular, returned coordinates, snapping and geometry tolerances were not established against an accepted independent truth set.

@@ -14,7 +14,8 @@
 3. R1's two actual tools/call requests established real upstream-to-downstream argument transfer; they did not prove that the coordinates or reverse-geocoded location were independently correct.
 4. Geometry predicate epsilon and route-snapping interpretation were unresolved in the pilot.
 5. credits_reserved is a local pre-spend budget figure; credits_observed remains null without direct provider metering.
-6. Sample geography and synthetic fixtures can share modeling assumptions with the evaluator, limiting independence.
+6. The November 11 partial 12 x 100 stress-test reached only 232 of 1,200 attempted calls, with 228 successful captured responses and four ambiguous transport failures. Most varied-input cases were never reached. The 228 internal PASS results are engineering smoke checks, not a geographic truth rate.
+7. Sample geography and synthetic fixtures can share modeling assumptions with the evaluator, limiting independence.
 
 ## Limitations of published evidence
 

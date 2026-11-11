@@ -46,6 +46,8 @@ This clean public version intentionally excludes historical M5-S0 sealed evidenc
 
 **LIVE-REPEAT-12X3, November 11, 2026:** A separate bounded experiment made 36 real MCP tools/call requests, three for each of the 12 observed tools. All 36 were tool-level successes; the original internal checks yielded **33 PASS / 3 UNKNOWN / 0 FAIL**. All three UNKNOWN cases were time-zone response normalization gaps. The three original captured time-zone replies subsequently normalized successfully in a strictly offline adapter fix. This is not a geographic accuracy claim. See the [repeatability pilot](docs/LIVE_REPEAT_12X3_20261111.md).
 
+**PARTIAL LIVE STRESS STUDY, November 11, 2026:** A 12-tool x 100-call plan (1,200 intended requests) was stopped early after transport interruptions. **232 actual call attempts** produced **228 captured successful tool replies** and **4 ambiguous network errors**; **968 cases were not attempted**. All 228 captured replies met the project's limited internal engineering checks, and 482 private inventory entries matched their SHA256 hashes. These figures do not demonstrate external geographic accuracy. Read the [partial live stress report](docs/LIVE_STRESS_12X100_PARTIAL_20261111.md).
+
 **Formal research governance is unchanged:** NO_GO, REAL18 0/18, G10 CLOSED, batch_2_authorized=false. These internal governance values are not vendor acceptance decisions.
 
 See [live results](docs/LIVE_FB10_RESULTS.md), [results overview](RESULTS_REPORT.md), and [known limitations](KNOWN_LIMITATIONS.md).
@@ -68,6 +70,8 @@ Read the [step-by-step MCP walkthrough](docs/REAL_MCP_WALKTHROUGH.md) before usi
 - [Reproduction and test commands](REPRODUCTION.md)
 - [Results and evidence tiers](RESULTS_REPORT.md)
 - [November 11 real MCP repeatability pilot](docs/LIVE_REPEAT_12X3_20261111.md)
+- [Partial 12 x 100 real MCP stress test (228 responses)](docs/LIVE_STRESS_12X100_PARTIAL_20261111.md)
+- Updated 102-second English demo and subtitles: available as assets in the latest GitHub Release.
 - [Failure taxonomy](FAILURE_TAXONOMY.md)
 - [AI prompts and development workflow](AI_WORKFLOW.md)
 - [Geoapify MCP/OpenAPI feedback](GEOAPIFY_FEEDBACK.md)
