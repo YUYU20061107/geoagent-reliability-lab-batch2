@@ -84,3 +84,7 @@ Read the [step-by-step MCP walkthrough](docs/REAL_MCP_WALKTHROUGH.md) before usi
 MIT License for project-authored source code. Any external map data retains its original licensing and attribution requirements. No OpenStreetMap database extract or private Geoapify response archive is included.
 
 [Geoapify](https://www.geoapify.com/) · [Geoapify API documentation](https://apidocs.geoapify.com/) · [Open Geospatial Program](https://www.geoapify.com/open-geospatial-program/)
+
+## Contact
+
+Project contact: Huangyu Rao — yyu004514@gmail.com (updated November 2026; the previous contact address is no longer in use.)
