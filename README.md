@@ -87,4 +87,4 @@ MIT License for project-authored source code. Any external map data retains its 
 
 ## Contact
 
-Project contact: Huangyu Rao — yyu004514@gmail.com (updated November 2026; the previous contact address is no longer in use.)
+Project contact: Huangyu Rao — raohy8@mail2.sysu.edu.cn (Sun Yat-sen University; updated November 16, 2026. Please use this address. The Gmail address previously listed here is temporarily unavailable.)
