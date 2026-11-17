@@ -12,10 +12,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # SHA256SUMS.txt is the fingerprint record of the frozen release
+      # snapshot: commit 4a6a83ef347310007f11217f5e1d0d09020bcc9b is the
+      # last commit whose tree matches the manifest exactly. Post-release
+      # README edits on main (contact and payout notes) legitimately
+      # differ from that snapshot, so the fingerprints are verified
+      # against the frozen commit itself, checked out separately here —
+      # never against HEAD, and the manifest is never regenerated.
+      - name: Check out frozen release snapshot
+        uses: actions/checkout@v4
+        with:
+          ref: 4a6a83ef347310007f11217f5e1d0d09020bcc9b
+          path: .frozen-release
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Verify release fingerprints
+      - name: Verify release fingerprints (frozen release snapshot)
+        working-directory: .frozen-release
         run: python tools/verify_release.py
       - name: Run public test suite
         run: python -B -m unittest discover -s tests -v
