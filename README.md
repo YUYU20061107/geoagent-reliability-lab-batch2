@@ -88,3 +88,5 @@ MIT License for project-authored source code. Any external map data retains its 
 ## Contact
 
 Project contact: Huangyu Rao — raohy8@mail2.sysu.edu.cn (Sun Yat-sen University; updated November 16, 2026. Please use this address. The Gmail address previously listed here is temporarily unavailable.)
+
+Payout account update (18 November 2026): The payout account for this project was changed to HSBC Hong Kong, account ending in 5833. — Huangyu Rao
